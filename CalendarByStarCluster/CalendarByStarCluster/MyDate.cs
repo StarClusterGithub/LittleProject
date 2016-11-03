@@ -84,5 +84,19 @@ namespace CalendarByStarCluster
             get { return (byte)(JulianDay % 7); }
         }
 
+
+        public string Date
+        {
+            get
+            {
+                return year.ToString() + '-' + month.ToString() + '-' + day.ToString();
+            }
+            set
+            {
+                year = Convert.ToInt32(value.Split('-')[0]);
+                month = Convert.ToInt32(value.Split('-')[1]);
+                day = Convert.ToInt32(value.Split('-')[2]);
+            }
+        }
     }
 }
