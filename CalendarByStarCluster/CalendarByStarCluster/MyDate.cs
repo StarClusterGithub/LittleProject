@@ -85,6 +85,9 @@ namespace CalendarByStarCluster
         }
 
 
+        /// <summary>
+        /// 日期的属性设置
+        /// </summary>
         public string Date
         {
             get
@@ -96,6 +99,8 @@ namespace CalendarByStarCluster
                 year = Convert.ToInt32(value.Split('-')[0]);
                 month = Convert.ToInt32(value.Split('-')[1]);
                 day = Convert.ToInt32(value.Split('-')[2]);
+                if (!(IsGregorianCalendar(year, month, day) && 1 <= month && month <= 12 && day >= 1 && day <= MonthDays))
+                    throw new Exception("invalid date!");
             }
         }
     }
