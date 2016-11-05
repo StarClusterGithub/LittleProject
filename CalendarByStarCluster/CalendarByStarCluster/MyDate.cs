@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace CalendarByStarCluster
 {
+    /// <summary>
+    /// MyDate类,类的主体为日期
+    /// </summary>
     internal class MyDate
     {
         private int year,month,day;
