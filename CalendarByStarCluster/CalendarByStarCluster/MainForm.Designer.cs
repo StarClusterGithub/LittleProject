@@ -28,35 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.DateList = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.DateList)).BeginInit();
             this.SuspendLayout();
             // 
-            // dataGridView1
+            // DateList
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 39);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(527, 390);
-            this.dataGridView1.TabIndex = 0;
+            this.DateList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.DateList.Location = new System.Drawing.Point(12, 73);
+            this.DateList.Margin = new System.Windows.Forms.Padding(8);
+            this.DateList.Name = "DateList";
+            this.DateList.RowTemplate.Height = 23;
+            this.DateList.Size = new System.Drawing.Size(520, 360);
+            this.DateList.TabIndex = 0;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(704, 441);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.DateList);
             this.Name = "MainForm";
             this.Text = "Calendar by StarCluster";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DateList)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridView DateList;
     }
 }
 
