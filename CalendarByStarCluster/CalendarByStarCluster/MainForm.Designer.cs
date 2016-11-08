@@ -34,6 +34,7 @@
             // 
             // DateList
             // 
+            this.DateList.BackgroundColor = System.Drawing.SystemColors.ButtonFace;
             this.DateList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DateList.Location = new System.Drawing.Point(12, 73);
             this.DateList.Margin = new System.Windows.Forms.Padding(8);
