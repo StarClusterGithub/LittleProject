@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,8 +24,15 @@ namespace MyDigitalSignature
             OpenFileDialog selectFile = new OpenFileDialog();
             if (selectFile.ShowDialog() == DialogResult.OK)
             {
-                rtxtResultShow.Text = ToHexString(new DigitalSignature(selectFile.FileName).SHA1);
+                //计算SHA1
+                rtxtResultShow.Text += "MySHA1:" + ToHexString(new DigitalSignature(selectFile.FileName).SHA1) + "\n";
                 tbFilePath.Text = selectFile.FileName;
+                //用c#提供的API计算SHA1
+                var hash = HashAlgorithm.Create();
+                var stream = new FileStream(selectFile.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                byte[] hashByte = hash.ComputeHash(stream);
+                stream.Close();
+                rtxtResultShow.Text += "C#SHA1:" + ToHexString(hashByte);
             }
         }
 
@@ -34,7 +42,14 @@ namespace MyDigitalSignature
             {
                 if (File.Exists(tbFilePath.Text))
                 {
-                    rtxtResultShow.Text = ToHexString(new DigitalSignature(tbFilePath.Text).SHA1);
+                    //计算SHA1
+                    rtxtResultShow.Text += "MySHA1:"+ToHexString(new DigitalSignature(tbFilePath.Text).SHA1) + "\n";
+                    //用c#提供的API计算SHA1
+                    var hash = HashAlgorithm.Create();
+                    var stream = new FileStream(tbFilePath.Text, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    byte[] hashByte = hash.ComputeHash(stream);
+                    stream.Close();
+                    rtxtResultShow.Text += "C#SHA1:"+ ToHexString(hashByte);
                 }
                 else
                 {

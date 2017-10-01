@@ -58,6 +58,7 @@
             // 
             resources.ApplyResources(this.rtxtResultShow, "rtxtResultShow");
             this.rtxtResultShow.Name = "rtxtResultShow";
+            this.rtxtResultShow.ReadOnly = true;
             // 
             // label2
             // 
