@@ -32,6 +32,9 @@ namespace TaskIconMgr
             public IntPtr Handle;
         }
 
+        /// <summary>
+        /// 获取所有窗体信息
+        /// </summary>
         static public WindowInfo[] WindowsInfo
         {
             get
@@ -53,7 +56,8 @@ namespace TaskIconMgr
                             StringBuilder className = new StringBuilder(256);
                             GetClassNameW(hWnd, className, className.Capacity);
                             item.ClassName = className.ToString();
-                            windowsInfo.Add(item);
+                            if(!item.Title.Equals(""))
+                                windowsInfo.Add(item);
                             return true;
                         }
                         , 0);

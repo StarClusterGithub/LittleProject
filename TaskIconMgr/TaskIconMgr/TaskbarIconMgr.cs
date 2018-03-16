@@ -14,12 +14,18 @@ namespace TaskIconMgr
     public partial class MainForm : Form
     {
         private MyHotKeys hotKeys = new MyHotKeys();
+        private ListViewItem activItem = null;
 
         public MainForm()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// 窗体加载时对ListView控件进行初始化,并注册热键
+        /// </summary>
+        /// <param name="sender">sender</param>
+        /// <param name="e">事件</param>
         private void MainForm_Load(object sender, EventArgs e)
         {
             //将任务栏选项添加到列表
@@ -27,17 +33,16 @@ namespace TaskIconMgr
             taskbar.SubItems[0].Text = "任务栏";
             taskbar.SubItems.Add("显示");
             iconList.Items.Add(taskbar);
+
             //获取并添加窗体
             foreach (MyUser32.WindowInfo item in MyUser32.WindowsInfo)
             {
-                if (!item.Title.Equals(""))
-                {
-                    ListViewItem window = new ListViewItem();
-                    window.SubItems[0].Text = item.Title;
-                    window.SubItems.Add("显示");
-                    iconList.Items.Add(window);
-                }
+                ListViewItem window = new ListViewItem();
+                window.SubItems[0].Text = item.Title;
+                window.SubItems.Add("显示");
+                iconList.Items.Add(window);
             }
+
             //注册热键,Shift+Alt+T是隐藏任务栏的
             hotKeys.Regist(this.Handle,
                             (int)MyHotKeys.HotkeyModifiers.Shift +
@@ -114,8 +119,16 @@ namespace TaskIconMgr
         //热键响应处理方法Shift+Alt+S
         private void ChangeCurrentWindowStatus()
         {
-            ListViewItem item = iconList.FindItemWithText(MyUser32.ActiveWindow.Title);
-            item.Checked = !item.Checked;
+            if (activItem != null)
+            {
+                activItem.Checked = !activItem.Checked;
+                activItem = null;
+            }
+            else
+            {
+                activItem = iconList.FindItemWithText(MyUser32.ActiveWindow.Title);
+                activItem.Checked = !activItem.Checked;
+            }
         }
     }
 }
