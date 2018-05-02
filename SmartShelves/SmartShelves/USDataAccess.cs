@@ -6,71 +6,50 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
 using System.IO;
+using System.Data;
 
 namespace SmartShelves
 {
-    #region PUBLIC
     /// <summary>
     /// 无人超市数据操作类,主要负责对SQLite进行操作
     /// </summary>
-    class USDataAccess
+    static class USDataAccess
     {
-
-        /// <summary>
-        /// 获取唯一实例的引用,如果不存在则创建一个实例,此后所有请求都返回该实例
-        /// </summary>
-        public static USDataAccess Ref
-        {
-            get
-            {
-                lock (refLock)
-                {
-                    if (self == null)
-                        self = new USDataAccess();
-                    return self;
-                }
-            }
-        }
-
-
-
-        /// <summary>
-        /// 析构函数,为了防止实例被意外干掉,因此在这里将self置为null
-        /// </summary>
-        ~USDataAccess()
-        {
-            self = null;
-        }
-
-        #endregion
-
-
-        #region PRIVATE
-
-        //用于防止多线程多次获取实例的锁
-        private static object refLock = new object();
-        //类内部存储的对自身的引用
-        private static USDataAccess self = null;
-        //数据库路径
-        private const string dbPath = @"..\..\database\usDB.sqlite";
+        //数据库文件所在路径
+        private const string dbPath = @".\Database\usDB.sqlite";
         //数据库连接
-        private readonly SQLiteConnection connection = new SQLiteConnection(string.Format("Data Source = {0}; Version = 3;",dbPath));
+        private readonly static SQLiteConnection connection = new SQLiteConnection($"Data Source = {dbPath}; Version = 3;");
 
         /// <summary>
-        /// 私有构造函数,仅用于属性器Ref创建唯一实例
-        /// 在构造函数内对数据库进行初始化
+        /// 创建数据库,如果已创建则什么都不做
         /// </summary>
-        private USDataAccess()
+        static USDataAccess()
         {
             //如果不存在数据库则创建数据库及数据表
+            //
+            //商品表
+            //id 商品id
+            //name 商品名
+            //price 价格
+            //manufacturer 生产厂家
+            //productiondate 生产日期
+            //validuntil 有效期
+            //shelflife 保质期
+            //inventory 库存数
+            //
+            //终端表
+            //tid 终端id
+            //cardId 卡id
+            //commodityId 商品id
             if (!File.Exists(dbPath))
             {
                 SQLiteConnection.CreateFile(dbPath);
                 string queryStr = @"create table [commodity]
                                 (
                                     [id] int not null primary key, 
-                                    [name] nchar(10) not null, 
-                                    [manufacturer] nchar(10) not null, 
+                                    [name] nchar(50) not null, 
+                                    [price] numeric(6,2) not null,
+                                    [manufacturer] nchar(50) not null, 
                                     [productiondate] date not null, 
                                     [validuntil] date not null, 
                                     [shelflife] int not null, 
@@ -78,16 +57,68 @@ namespace SmartShelves
                                 );
                                 create table [terminal]
                                 (
-                                    [tid] int not null primary key, 
-                                    [cardId] int not null, 
-                                    [commodityId] int not null
+                                    [tid] int not null, 
+                                    [cardId] nchar(4) not null, 
+                                    [commodityId] int not null,
+                                    primary key([tid],[cardId])
                                 );";
                 connection.Open();
-                SQLiteCommand command = new SQLiteCommand(queryStr,connection);
+                SQLiteCommand command = new SQLiteCommand(queryStr, connection);
                 command.ExecuteNonQuery();
                 connection.Close();
             }
         }
-        #endregion
+
+        /// <summary>
+        /// 以指定select语句对数据库进行查询,并返回数据表
+        /// </summary>
+        /// <param name="queryStr">查询语句</param>
+        /// <returns>查询语句对应的查询结果</returns>
+        static public DataTable Select(string queryStr)
+        {
+            connection.Open();
+            SQLiteCommand command = new SQLiteCommand(queryStr, connection);
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            DataTable table = new DataTable("table1");
+            adapter.Fill(table);
+            connection.Close();
+            return table;
+        }
+
+        /// <summary>
+        /// 按照输入的查询语句对数据库进行更新
+        /// </summary>
+        /// <param name="queryStr">update语句</param>
+        static public void Update(string queryStr)
+        {
+            connection.Open();
+            SQLiteCommand command = new SQLiteCommand(queryStr, connection);
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        /// <summary>
+        /// 以指定的insert语句将新行添加到数据库
+        /// </summary>
+        /// <param name="queryStr">insert语句</param>
+        static public void Insert(string queryStr)
+        {
+            connection.Open();
+            SQLiteCommand command = new SQLiteCommand(queryStr, connection);
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
+
+        /// <summary>
+        /// 从数据库中删除指定的行
+        /// </summary>
+        /// <param name="queryStr">delete语句</param>
+        static public void Delete(string queryStr)
+        {
+            connection.Open();
+            SQLiteCommand command = new SQLiteCommand(queryStr, connection);
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
     }
 }

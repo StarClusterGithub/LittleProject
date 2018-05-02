@@ -75,6 +75,7 @@
     <Compile Include="GoodsManagementSubsystem.Designer.cs">
       <DependentUpon>GoodsManagementSubsystem.cs</DependentUpon>
     </Compile>
+    <Compile Include="PL2303.cs" />
     <Compile Include="SmartShelvesTerminal.cs">
       <SubType>Form</SubType>
     </Compile>

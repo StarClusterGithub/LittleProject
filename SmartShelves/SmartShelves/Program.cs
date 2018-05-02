@@ -24,7 +24,7 @@ namespace SmartShelves
             //启动线程
             sst.Start();
             gms.Start();
-            //等待线程执行完毕
+            //等待线程执行完毕,此处循环的空语句有意为之
             for (; sst.IsAlive && gms.IsAlive;)
                 ;
         }
