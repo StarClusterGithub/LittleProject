@@ -52,6 +52,7 @@
             this.dgvDisplay.RowTemplate.Height = 23;
             this.dgvDisplay.Size = new System.Drawing.Size(471, 338);
             this.dgvDisplay.TabIndex = 0;
+            this.dgvDisplay.DataSourceChanged += new System.EventHandler(this.dgvDisplay_DataSourceChanged);
             // 
             // tbQueryCondition
             // 
