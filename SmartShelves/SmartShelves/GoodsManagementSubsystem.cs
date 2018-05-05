@@ -34,7 +34,7 @@ namespace SmartShelves
             this.Load += (x, y) =>
             {
                 serialPort = new PL2303();
-                DGVDataSource = USDataAccess.Select("select id as 商品代码,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数 from [commodity];");
+                DGVDataSource = USDataAccess.Select("select id as 商品代码,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,count(commodityId) as 库存数 from  [terminal] as t1 join [commodity] as t2 on t1.commodityId = t2.id group by commodityId;");
             };
 
             //串口随窗体焦点改变而开/关
@@ -99,7 +99,7 @@ namespace SmartShelves
             }
             try
             {
-                DGVDataSource = USDataAccess.Select($"select  id as 商品代码,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数  from [commodity] where {querySpecies + queryCondition};");
+                DGVDataSource = USDataAccess.Select($"select id as 商品代码, name as 商品名, price as 价格, manufacturer as 生产厂家, productiondate as 生产日期, validuntil as 有效期, count(commodityId) as 库存数 from[terminal] as t1 join[commodity] as t2 on t1.commodityId = t2.id where {querySpecies + queryCondition} group by commodityId;");
             }
             catch (Exception)
             {
@@ -148,7 +148,7 @@ namespace SmartShelves
                 try
                 {
                     USDataAccess.Insert($"insert into [commodity] values({values.Trim(',')});");
-                    BeginInvoke(new MethodInvoker(() => DGVDataSource = USDataAccess.Select("select id as 商品代码,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数 from [commodity];")));
+                    BeginInvoke(new MethodInvoker(() => DGVDataSource = USDataAccess.Select("select id as 商品代码, name as 商品名, price as 价格, manufacturer as 生产厂家, productiondate as 生产日期, validuntil as 有效期, count(commodityId) as 库存数 from[terminal] as t1 join[commodity] as t2 on t1.commodityId = t2.id group by commodityId;")));
                     isAdd = false;
                 }
                 catch (Exception)
@@ -169,7 +169,7 @@ namespace SmartShelves
             string newCellValue = dgvMgrItem.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
             //USDataAccess.Update("update [commodity] set [xx] = xxxx where [xxx] = 'xxx';");
             USDataAccess.Update($"update [commodity] set {USDataAccess.CommodityColumns[e.ColumnIndex]} = '{newCellValue}' where [id] = {id};");
-            BeginInvoke(new MethodInvoker(() => DGVDataSource = USDataAccess.Select("select id as 商品代码,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数 from [commodity];")));
+            BeginInvoke(new MethodInvoker(() => DGVDataSource = USDataAccess.Select("select id as 商品代码, name as 商品名, price as 价格, manufacturer as 生产厂家, productiondate as 生产日期, validuntil as 有效期, count(commodityId) as 库存数 from[terminal] as t1 join[commodity] as t2 on t1.commodityId = t2.id group by commodityId;")));
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace SmartShelves
                 () =>
                 {
                     USDataAccess.Delete($"delete from [commodity] where [id] = {delId};");
-                    DGVDataSource = USDataAccess.Select("select id as 商品代码,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数 from [commodity];");
+                    DGVDataSource = USDataAccess.Select("select id as 商品代码, name as 商品名, price as 价格, manufacturer as 生产厂家, productiondate as 生产日期, validuntil as 有效期, count(commodityId) as 库存数 from[terminal] as t1 join[commodity] as t2 on t1.commodityId = t2.id group by commodityId;");
                 }
                 ));
         }

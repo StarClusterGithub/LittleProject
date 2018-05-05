@@ -37,8 +37,6 @@ namespace SmartShelves
             //manufacturer 生产厂家
             //productiondate 生产日期
             //validuntil 有效期
-            //shelflife 保质期
-            //inventory 库存数
             //
             //终端表
             //tid 终端id
@@ -55,8 +53,7 @@ namespace SmartShelves
                                     [manufacturer] nchar(50) not null, 
                                     [productiondate] nchar(10) not null, 
                                     [validuntil] nchar(10) not null, 
-                                    [shelflife] int not null, 
-                                    [inventory] int not null
+                                    [shelflife] int not null
                                 );
                                 create table [terminal]
                                 (
@@ -87,7 +84,7 @@ namespace SmartShelves
         {
             get
             {
-                return new string[] { "[id]", "[name]", "[price]", "[manufacturer]", "[productiondate]", "[validuntil]", "[shelflife]", "[inventory]" };
+                return new string[] { "[id]", "[name]", "[price]", "[manufacturer]", "[productiondate]", "[validuntil]" };
             }
         }
 
@@ -116,9 +113,15 @@ namespace SmartShelves
             SQLiteCommand command = new SQLiteCommand(queryStr, connection);
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             DataTable table = new DataTable("table1");
-            if(connection.State.Equals(ConnectionState.Closed))
+            try
+            {
+                adapter.Fill(table);
+            }
+            catch (System.InvalidOperationException)
+            {
                 connection.Open();
-            adapter.Fill(table);
+                adapter.Fill(table);
+            }
             connection.Close();
             IsLock = false;
             return table;
