@@ -15,9 +15,7 @@ namespace SmartShelves
 {
     public partial class SmartShelvesTerminal : Form
     {
-        //串口操作实例
-        PL2303 serialPort = null;
-        //查询种类;当前货柜id
+        PL2303 serialPort = new PL2303();
         private string querySpecies = null;
         private int curTid = default(int);
 
@@ -25,34 +23,14 @@ namespace SmartShelves
         {
             InitializeComponent();
 
-            //debug
-            //USDataAccess.Delete("delete from [terminal] where tid = 0;");
+            //登记货柜
+            curTid = USDataAccess.Select("select * from [terminal] where [tid] < 1000;").Rows.Count + 1;
+            USDataAccess.Insert($"insert into [terminal] values({curTid},'0x0000',0);");
 
-            //登记并显示货柜
-            curTid = USDataAccess.Select("select distinct [tid] from [terminal] where [tid] != 0;").Rows.Count + 1;
-
-            //相关事件
+            //监听事件
             tbQueryCondition.Click += (x, y) => tbQueryCondition.Text = "";
-            this.Load += (x, y) =>
-            {
-                serialPort = new PL2303();
-                dgvDisplay.DataSource = USDataAccess.Select("select tid as 所在货柜,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数 from [terminal] as t1 join [commodity] as t2 on t1.commodityId = t2.id;");
-            };
-            this.Activated += (x, y) => { serialPort?.Open(); timerSerialPort.Enabled = true; };
-            this.Deactivate += (x, y) => { serialPort?.Close(); timerSerialPort.Enabled = false; };
-        }
-
-        /// <summary>
-        /// 数据源更改时触发,以调整列宽自适应
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void dgvDisplay_DataSourceChanged(object sender, EventArgs e)
-        {
-
-            DataGridView curDgv = (DataGridView)sender;
-            foreach (DataGridViewColumn item in curDgv.Columns)
-                item.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            this.GotFocus += (x, y) => serialPort.Open();
+            this.LostFocus += (x, y) => serialPort.Close();
         }
 
         /// <summary>
@@ -82,19 +60,28 @@ namespace SmartShelves
         /// <param name="e"></param>
         private void Search_Click(object sender, EventArgs e)
         {
-            if (tbQueryCondition.Text.Equals("") || cmbQuerySpecies.Text.Equals("请选择查询类别"))
-            {
-                MessageBox.Show("请设定查询条件!");
-                return;
-            }
-            try
-            {
-                dgvDisplay.DataSource = USDataAccess.Select($"select tid as 所在货柜,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数 from [terminal] as t1 join [commodity] as t2 on t1.commodityId = t2.id where {querySpecies} '{tbQueryCondition.Text}';");
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("查询失败,请检查输入是否正确.");
-            }
+            //if (tbQueryCondition.Text.Equals("") || cmbQuerySpecies.Text.Equals("请选择查询类别"))
+            //{
+            //    MessageBox.Show("请设定查询条件!");
+            //}
+            //try
+            //{
+            //dgvDisplay.DataSource = USDataAccess.Select($"select * from [commodity] where {querySpecies + tbQueryCondition.Text};");
+            //}
+            //catch (Exception)
+            //{
+            //    MessageBox.Show("查询失败,请检查输入是否正确.");
+            //}
+
+            //USDataAccess.Insert("insert into [terminal] values(1234,'0x01',1234);");
+            //USDataAccess.Insert("insert into [terminal] values(2234,'0x02',2234);");
+            //USDataAccess.Insert("insert into [terminal] values(4234,'0x03',3234);");
+            //USDataAccess.Delete("delete from [terminal] where tid = 1234;");
+            //USDataAccess.Insert("insert into [commodity] values(3234,'测试',12.34,'china','2018-01-01','2018-03-01',2,40);");
+            //dgvDisplay.DataSource = USDataAccess.Select("select * from [terminal] as t1 join [commodity] as t2 on t1.commodityId = t2.id");
+            //USDataAccess.Update("update [terminal] set [tid] = 3234 where [cardId] = '0x03';");
+
+            dgvDisplay.DataSource = USDataAccess.Select("select * from [terminal];");
         }
 
         /// <summary>
@@ -111,28 +98,25 @@ namespace SmartShelves
                 {
                     if (str.Contains("addr:0x0001 read data:0x"))
                     {
-                        //查询对应卡id的信息
                         string cardId = str.Substring(24,4);
-                        //判断rfid标签是否绑定
-                        if(cardId.Equals("0000"))
-                        {
-                            return;
-                        }
-
                         var dataTable = USDataAccess.Select($"select * from [terminal] where [cardId] like {cardId}");
+                        //判断rfid标签是否绑定
                         if (dataTable.Rows.Count > 0)
                         {
                             //判断是添加商品到货柜还是拿走商品
-                            if (int.Parse(dataTable.Rows[0][0].ToString()) == 0)
+                            if (int.Parse(dataTable.Rows[0][0].ToString()) >= 1000)
                             {
                                 USDataAccess.Update($"update [terminal] set [tid] = {curTid} where [cardId] like {cardId};");
                             }
                             else
                             {
-                                USDataAccess.Delete($"delete from [terminal] where [cardId] like {cardId};");
-                                serialPort.Write("CM+WRITE -addr=0x01 -value=0x0000");
+                                USDataAccess.Update($"update [terminal] set [tid] = {1000 + curTid} where [cardId] like {cardId};");
                             }
-                            dgvDisplay.DataSource = USDataAccess.Select("select tis as 所在货柜,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数 from [terminal] as t1 join [commodity] as t2 on t1.commodityId = t2.id;");
+                        }
+                        else
+                        {
+                            MessageBox.Show("该商品未登记在册!");
+                            return;
                         }
                     }
                 }
@@ -144,6 +128,5 @@ namespace SmartShelves
                 return;
             }
         }
-
     }
 }

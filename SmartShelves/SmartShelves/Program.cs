@@ -22,9 +22,7 @@ namespace SmartShelves
             //货物管理子系统
             Thread gms = new Thread(() => { Application.Run(new GoodsManagementSubsystem()); });
             //启动线程
-            sst.Name = "智能终端";
             sst.Start();
-            gms.Name = "货物管理";
             gms.Start();
             //等待线程执行完毕,此处循环的空语句有意为之
             for (; sst.IsAlive && gms.IsAlive;)
