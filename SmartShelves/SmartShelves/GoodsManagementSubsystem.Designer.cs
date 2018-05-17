@@ -361,7 +361,6 @@
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "货物管理子系统";
-            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.tableControls.ResumeLayout(false);
             this.tpAdd.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAddItem)).EndInit();

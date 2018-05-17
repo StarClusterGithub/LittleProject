@@ -116,9 +116,15 @@ namespace SmartShelves
             SQLiteCommand command = new SQLiteCommand(queryStr, connection);
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             DataTable table = new DataTable("table1");
-            if(connection.State.Equals(ConnectionState.Closed))
+            try
+            {
+                adapter.Fill(table);
+            }
+            catch (System.InvalidOperationException)
+            {
                 connection.Open();
-            adapter.Fill(table);
+                adapter.Fill(table);
+            }
             connection.Close();
             IsLock = false;
             return table;

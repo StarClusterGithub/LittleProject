@@ -26,7 +26,7 @@ namespace SmartShelves
             InitializeComponent();
 
             //debug
-            //USDataAccess.Delete("delete from [terminal] where tid = 0;");
+            USDataAccess.Delete("delete from [terminal] where tid = 0;");
 
             //登记并显示货柜
             curTid = USDataAccess.Select("select distinct [tid] from [terminal] where [tid] != 0;").Rows.Count + 1;
@@ -119,17 +119,17 @@ namespace SmartShelves
                             return;
                         }
 
-                        var dataTable = USDataAccess.Select($"select * from [terminal] where [cardId] like {cardId}");
+                        var dataTable = USDataAccess.Select($"select * from [terminal] where [cardId] like '{cardId}';");
                         if (dataTable.Rows.Count > 0)
                         {
                             //判断是添加商品到货柜还是拿走商品
                             if (int.Parse(dataTable.Rows[0][0].ToString()) == 0)
                             {
-                                USDataAccess.Update($"update [terminal] set [tid] = {curTid} where [cardId] like {cardId};");
+                                USDataAccess.Update($"update [terminal] set [tid] = {curTid} where [cardId] like '{cardId}';");
                             }
                             else
                             {
-                                USDataAccess.Delete($"delete from [terminal] where [cardId] like {cardId};");
+                                USDataAccess.Delete($"delete from [terminal] where [cardId] like '{cardId}';");
                                 serialPort.Write("CM+WRITE -addr=0x01 -value=0x0000");
                             }
                             dgvDisplay.DataSource = USDataAccess.Select("select tis as 所在货柜,name as 商品名,price as 价格,manufacturer as 生产厂家,productiondate as 生产日期,validuntil as 有效期,shelflife as 保质期,inventory as 库存数 from [terminal] as t1 join [commodity] as t2 on t1.commodityId = t2.id;");
