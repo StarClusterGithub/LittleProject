@@ -19,6 +19,9 @@ namespace SmartShelves
         private const string dbPath = @".\Database\usDB.sqlite";
         //数据库连接
         private readonly static SQLiteConnection connection = new SQLiteConnection($"Data Source = {dbPath}; Version = 3;");
+        //线程锁
+        private static object synObj = new object();
+        private static bool isLock = false;
 
         /// <summary>
         /// 创建数据库,如果已创建则什么都不做
@@ -34,8 +37,6 @@ namespace SmartShelves
             //manufacturer 生产厂家
             //productiondate 生产日期
             //validuntil 有效期
-            //shelflife 保质期
-            //inventory 库存数
             //
             //终端表
             //tid 终端id
@@ -50,10 +51,9 @@ namespace SmartShelves
                                     [name] nchar(50) not null, 
                                     [price] numeric(6,2) not null,
                                     [manufacturer] nchar(50) not null, 
-                                    [productiondate] date not null, 
-                                    [validuntil] date not null, 
-                                    [shelflife] int not null, 
-                                    [inventory] int not null
+                                    [productiondate] nchar(10) not null, 
+                                    [validuntil] nchar(10) not null, 
+                                    [shelflife] int not null
                                 );
                                 create table [terminal]
                                 (
@@ -67,6 +67,36 @@ namespace SmartShelves
                 command.ExecuteNonQuery();
                 connection.Close();
             }
+            //测试代码
+            //USDataAccess.Insert("insert into [terminal] values(1234,'0x01',1234);");
+            //USDataAccess.Insert("insert into [terminal] values(2234,'0x02',2234);");
+            //USDataAccess.Insert("insert into [terminal] values(4234,'0x03',3234);");
+            //USDataAccess.Insert("insert into [commodity] values(3234,'测试',12.34,'china','2018-01-01','2018-03-01',2,40);");
+            //dgvDisplay.DataSource = USDataAccess.Select("select * from [terminal] as t1 join [commodity] as t2 on t1.commodityId = t2.id");
+            //USDataAccess.Delete("delete from [terminal] where tid = 1234;");
+            //USDataAccess.Update("update [terminal] set [tid] = 3234 where [cardId] = '0x03';");
+        }
+
+        /// <summary>
+        /// 商品表列名属性器
+        /// </summary>
+        static public string[] CommodityColumns
+        {
+            get
+            {
+                return new string[] { "[id]", "[name]", "[price]", "[manufacturer]", "[productiondate]", "[validuntil]" };
+            }
+        }
+
+        /// <summary>
+        /// 终端表列名属性器
+        /// </summary>
+        static public string[] TerminalColumns
+        {
+            get
+            {
+                return new string[] { "[tid]", "[cardId]", "[commodityId]" };
+            }
         }
 
         /// <summary>
@@ -76,12 +106,24 @@ namespace SmartShelves
         /// <returns>查询语句对应的查询结果</returns>
         static public DataTable Select(string queryStr)
         {
+            for (; IsLock;)
+                ;
+            IsLock = true;
             connection.Open();
             SQLiteCommand command = new SQLiteCommand(queryStr, connection);
             SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
             DataTable table = new DataTable("table1");
-            adapter.Fill(table);
+            try
+            {
+                adapter.Fill(table);
+            }
+            catch (System.InvalidOperationException)
+            {
+                connection.Open();
+                adapter.Fill(table);
+            }
             connection.Close();
+            IsLock = false;
             return table;
         }
 
@@ -91,10 +133,14 @@ namespace SmartShelves
         /// <param name="queryStr">update语句</param>
         static public void Update(string queryStr)
         {
+            for (; IsLock;)
+                ;
+            IsLock = true;
             connection.Open();
             SQLiteCommand command = new SQLiteCommand(queryStr, connection);
             command.ExecuteNonQuery();
             connection.Close();
+            IsLock = false;
         }
 
         /// <summary>
@@ -103,10 +149,14 @@ namespace SmartShelves
         /// <param name="queryStr">insert语句</param>
         static public void Insert(string queryStr)
         {
+            for (; IsLock;)
+                ;
+            IsLock = true;
             connection.Open();
             SQLiteCommand command = new SQLiteCommand(queryStr, connection);
             command.ExecuteNonQuery();
             connection.Close();
+            IsLock = false;
         }
 
         /// <summary>
@@ -115,10 +165,35 @@ namespace SmartShelves
         /// <param name="queryStr">delete语句</param>
         static public void Delete(string queryStr)
         {
+            for (; IsLock;)
+                ;
+            IsLock = true;
             connection.Open();
             SQLiteCommand command = new SQLiteCommand(queryStr, connection);
             command.ExecuteNonQuery();
             connection.Close();
+            IsLock = false;
+        }
+
+        /// <summary>
+        /// 同步状态属性器,此类在被使用时为true,否则为false
+        /// </summary>
+        static bool IsLock
+        {
+            get
+            {
+                lock(synObj)
+                {
+                    return isLock;
+                }
+            }
+            set
+            {
+                lock(synObj)
+                {
+                    isLock = value;
+                }
+            }
         }
     }
 }
