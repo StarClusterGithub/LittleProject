@@ -213,8 +213,9 @@ namespace SmartShelves
                     temp = rand.Next(1, 10000);
                 curCardId = temp.ToString();
             }
-
-            serialPort.Write($"CM+WRITE -addr=0x01 -value=0x{curCardId}");
+            
+            for(; !serialPort.ReadAllData().Contains("addr:0x0001 para:0x");)
+                serialPort.Write($"CM+WRITE -addr=0x01 -value=0x{curCardId}"); 
             USDataAccess.Insert($"insert into [terminal] values(0,'{curCardId}',{dgvBindingItem.CurrentRow.Cells[0].Value.ToString()});");
 
             curCardId = null;
@@ -237,7 +238,8 @@ namespace SmartShelves
                         if (str.Contains("addr:0x0001 read data:0x"))
                         {
                             string cardId = str.Substring(24, 4);
-                            DataTable table = USDataAccess.Select($"select * from [terminal] where [cardId] like {cardId}");
+                            //查询数据库中有无此rfid标签的识别码
+                            DataTable table = USDataAccess.Select($"select * from [terminal] where [cardId] like '{cardId}'");
                             if(table.Rows.Count==0)
                             {
                                 curCardId = "";
