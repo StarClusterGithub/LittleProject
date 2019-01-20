@@ -136,21 +136,21 @@ namespace FileUniquenessFilter
             return tmp.ToHexString();
         }
 
+        private List<string> SHA1List { get; set; } = new List<string>();
         private void Filter(string inputDir,string outputDir)
         {
-            var sha1List = new List<string>();
             foreach(var item in new DirectoryInfo(inputDir).GetFileSystemInfos())
             {
                 switch (item.Attributes)
                 {
                     case FileAttributes.Archive:
                         string sha1 = ComputeSHA1(item.FullName);
-                        if (!sha1List.Contains(sha1))
+                        if (!SHA1List.Contains(sha1))
                         {
                             //rtbDisplay.AppendText($"coping file {item.Name}...\r\n");
                             //rtbDisplay.ScrollToCaret();
 
-                            sha1List.Add(sha1);
+                            SHA1List.Add(sha1);
                             File.Copy(item.FullName, Path.Combine(outputDir, item.Name), true);
                         }
                         break;
