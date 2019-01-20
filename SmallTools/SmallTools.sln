@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastIndentation", "FastInde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxthonChromeBookmarkConverter", "MaxthonChromeBookmarkConverter\MaxthonChromeBookmarkConverter.csproj", "{0034EE16-4AB1-4732-BD53-03AD260691A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileUniquenessFilter", "FileUniquenessFilter\FileUniquenessFilter.csproj", "{F1B4A02F-6394-46B3-9EAB-7AFF816D7E41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0034EE16-4AB1-4732-BD53-03AD260691A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0034EE16-4AB1-4732-BD53-03AD260691A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0034EE16-4AB1-4732-BD53-03AD260691A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1B4A02F-6394-46B3-9EAB-7AFF816D7E41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1B4A02F-6394-46B3-9EAB-7AFF816D7E41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1B4A02F-6394-46B3-9EAB-7AFF816D7E41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1B4A02F-6394-46B3-9EAB-7AFF816D7E41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
