@@ -126,7 +126,7 @@ namespace IDNumberGenerator
         /// <returns></returns>
         private char CheckCode(string id)
         {
-            if (id.Length != 17)
+            if (id.Length != 17 && id.Length != 18)
                 throw new FormatException($"参数长度错误:\r\n{id}\r\nLength = {id.Length}");
 
             //  wi = 公民身份号码中各个位置上的加权因子
@@ -177,7 +177,7 @@ namespace IDNumberGenerator
 
             if (id.Length == 17 || (id.Length == 18 && !id.Contains("_")))
             {
-                id += CheckCode(id);
+                id = id.Substring(0, 17) + CheckCode(id);
                 rtbCompletionResult.AppendText($"\r\n\r\n补全结果:\r\n{id}\r\n");
             }
             else
