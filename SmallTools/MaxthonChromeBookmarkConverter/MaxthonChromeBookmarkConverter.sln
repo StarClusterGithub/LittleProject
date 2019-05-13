@@ -3,15 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastIndentation", "FastIndentation\FastIndentation.csproj", "{977669B5-B95B-4DFA-ABFF-F5BBA9419665}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxthonChromeBookmarkConverter", "MaxthonChromeBookmarkConverter\MaxthonChromeBookmarkConverter.csproj", "{0034EE16-4AB1-4732-BD53-03AD260691A0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileUniquenessFilter", "FileUniquenessFilter\FileUniquenessFilter.csproj", "{F1B4A02F-6394-46B3-9EAB-7AFF816D7E41}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDNumberGenerator", "IDNumberGenerator\IDNumberGenerator.csproj", "{72F3126D-BC3E-42CF-8702-A8D478C5F980}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TempVoteTool", "..\TempVoteTool\TempVoteTool.csproj", "{FC0F3885-1866-4A67-A4CF-8631E3393EF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
